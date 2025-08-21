@@ -1,6 +1,8 @@
 "use client";
 import { useState } from "react";
-import products from "../../data/products.json";
+import fitness from "../../data/products/fitness.json";
+import music from "../../data/products/music.json";
+const products = [...fitness, ...music];
 
 export default function Home() {
   const [query, setQuery] = useState("");
@@ -19,21 +21,25 @@ export default function Home() {
       <h1 className='text-2xl font-bold mb-4 text-center'>Buy Low, Sell High</h1>
 
       {/* Product list */}
-      <ul className='space-y-4'>
-        {filteredProducts.map((item) => (
-          <li key={item.id} className='p-4 border rounded-lg shadow'>
-            <h2 className='text-lg font-semibold mb-1'>{item.name}</h2>
-            <p className='text-sm mb-1'>Category: {item.category}</p>
-            <p className='text-sm mb-1'>Brands: {item.brands.join(", ")}</p>
-            <p className='text-sm mb-1'>Buy Price: ${item.buyPrice}</p>
-            <p className='text-sm mb-1'>Sell Price: ${item.sellPrice}</p>
-            {item.qualityChecklist && <p className='text-sm mb-1'>Quality Checklist: {item.qualityChecklist}</p>}
-            {item.notes && <p className='text-sm mb-1'>Notes: {item.notes}</p>}
-            <p className='font-bold text-green-600 mt-1'>Profit: ${item.sellPrice - item.buyPrice}</p>
-          </li>
-        ))}
-        {filteredProducts.length === 0 && <p className='text-gray-500 text-center'>No products found.</p>}
-      </ul>
+      <div className='overflow-y-auto mb-44' style={{ maxHeight: "calc(100vh - 16rem)", paddingBottom: "2rem" }}>
+        <ul className='space-y-4'>
+          {filteredProducts.map((item) => (
+            <li key={item.id} className='p-4 border rounded-lg shadow'>
+              <h2 className='text-lg font-semibold mb-1'>
+                {item.emoji} {item.name}
+              </h2>
+              <p className='text-sm mb-1'>Category: {item.category}</p>
+              <p className='text-sm mb-1'>Brands: {item.brands.join(", ")}</p>
+              <p className='text-sm mb-1'>Buy Price: ${item.buyPrice}</p>
+              <p className='text-sm mb-1'>Sell Price: ${item.sellPrice}</p>
+              {item.qualityChecklist && <p className='text-sm mb-1'>Quality Check: {item.qualityCheck}</p>}
+              {item.notes && <p className='text-sm mb-1'>Notes: {item.notes}</p>}
+              <p className='font-bold text-green-600 mt-1'>Profit: ${item.sellPrice - item.buyPrice}</p>
+            </li>
+          ))}
+          {filteredProducts.length === 0 && <p className='text-gray-500 text-center'>No products found.</p>}
+        </ul>
+      </div>
 
       {/* Filters */}
       <div className='fixed bottom-16 left-0 w-full bg-black z-10 p-4 border-t shadow-inner'>

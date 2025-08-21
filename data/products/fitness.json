@@ -1,0 +1,46 @@
+[
+  {
+    "id": 1,
+    "emoji": "⚾️",
+    "name": "Baseball Bats",
+    "category": "Fitness",
+    "brands": [],
+    "buyPrice": 0,
+    "sellPrice": 0,
+    "qualityCheck": "No cracks, rattles, or dents",
+    "notes": "Certifications: USA for Recreation Leagues, USSSA for Travel Leagues, BBCOR for high school/college"
+  },
+  {
+    "id": 2,
+    "emoji": "⚾️",
+    "name": "Baseball Glove",
+    "category": "Fitness",
+    "brands": [],
+    "buyPrice": 0,
+    "sellPrice": 0,
+    "qualityCheck": "Full leather, no tears",
+    "notes": ""
+  },
+  {
+    "id": 3,
+    "emoji": "🏀",
+    "name": "Basketball",
+    "category": "Fitness",
+    "brands": ["Wilson Evolution"],
+    "buyPrice": 0,
+    "sellPrice": 0,
+    "qualityCheck": "",
+    "notes": ""
+  },
+  {
+    "id": 4,
+    "emoji": "💪",
+    "name": "Dumbbells",
+    "category": "Fitness",
+    "brands": ["Rogue"],
+    "buyPrice": 0.5,
+    "sellPrice": 1,
+    "qualityCheck": "No rust",
+    "notes": "Iron sells for $1 per pound. Rubber sells for $2 per pound."
+  }
+]

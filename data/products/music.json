@@ -1,0 +1,13 @@
+[
+  {
+    "id": 1,
+    "emoji": "🎸",
+    "name": "Guitar",
+    "category": "Music",
+    "brands": [],
+    "buyPrice": 20,
+    "sellPrice": 100,
+    "qualityCheck": "",
+    "notes": ""
+  }
+]
