@@ -37,19 +37,20 @@ export const getEbayToken = async () => {
 // ------------------------
 // 2. Active Listings Search
 // ------------------------
-export const searchActiveListings = async (token, barcode) => {
+export const searchActiveListings = async (token, barcode, conditionFilter = "") => {
   const allItems = [];
-  const limit = 50; // max per request
+  const limit = 100;
   let offset = 0;
   let hasMore = true;
 
   while (hasMore) {
     const url = new URL("https://api.ebay.com/buy/browse/v1/item_summary/search");
     url.searchParams.append("gtin", barcode);
-    url.searchParams.append("limit", limit);
-    url.searchParams.append("offset", offset);
+    url.searchParams.append("limit", limit.toString());
+    url.searchParams.append("offset", offset.toString());
+    if (conditionFilter) url.searchParams.append("filter", conditionFilter);
 
-    const response = await fetch(url.toString(), {
+    const res = await fetch(url.toString(), {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
@@ -57,42 +58,14 @@ export const searchActiveListings = async (token, barcode) => {
       cache: "no-store",
     });
 
-    if (!response.ok) {
-      throw new Error(`Active search failed: ${response.statusText}`);
-    }
+    if (!res.ok) throw new Error(`Active search failed: ${res.statusText}`);
 
-    const data = await response.json();
+    const data = await res.json();
     const items = data.itemSummaries || [];
     allItems.push(...items);
 
-    // If less than limit returned, no more pages
-    if (items.length < limit) {
-      hasMore = false;
-    } else {
-      offset += limit;
-    }
-  }
-
-  // If too few results, fallback to keyword search
-  if (allItems.length < 10) {
-    const keywordUrl = new URL("https://api.ebay.com/buy/browse/v1/item_summary/search");
-    keywordUrl.searchParams.append("q", barcode);
-    keywordUrl.searchParams.append("limit", limit);
-
-    const keywordResponse = await fetch(keywordUrl.toString(), {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      cache: "no-store",
-    });
-
-    if (!keywordResponse.ok) {
-      throw new Error(`Keyword search failed: ${keywordResponse.statusText}`);
-    }
-
-    const keywordData = await keywordResponse.json();
-    allItems.push(...(keywordData.itemSummaries || []));
+    if (items.length < limit) hasMore = false;
+    else offset += limit;
   }
 
   return { itemSummaries: allItems };
