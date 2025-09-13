@@ -1,3 +1,5 @@
+// src/app/components/EbaySearch.js
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -52,24 +54,27 @@ export default function EbaySearch({ barcode = "", autoSearch = false }) {
       {result && (
         <div className='mt-3 border p-3 rounded text-sm sm:text-base'>
           <h2 className='font-bold'>Results</h2>
-          <p>Active Listings: {result.numActive}</p>
-          <p>Sold Listings: {result.numSold}</p>
-          <p>Sell-Through Rate: {result.sellThroughRate}%</p>
-          {result.recommendedPrice && <p>Recommended Price: ${result.recommendedPrice}</p>}
+          <p>Active Listings: {result.activeListings?.length || 0}</p>
+          <p>Sold Listings: PLACEHOLDER</p>
+          <p>Sell-Through Rate: PLACEHOLDER</p>
 
-          <h3 className='mt-2 font-semibold'>Active Listings</h3>
-          <ul className='space-y-1'>
-            {result.activeListings.map((item) => (
-              <li key={item.itemId} className='border p-2 rounded truncate'>
-                <a href={item.itemWebUrl} target='_blank' rel='noopener noreferrer' className='truncate block'>
-                  {item.title}
-                </a>
-                <p>
-                  {item.price.value} {item.price.currency}
-                </p>
-              </li>
-            ))}
-          </ul>
+          {result.activeListings?.length > 0 && (
+            <>
+              <h3 className='mt-2 font-semibold'>Active Listings</h3>
+              <ul className='space-y-1'>
+                {result.activeListings.map((item) => (
+                  <li key={item.itemId} className='border p-2 rounded truncate'>
+                    <a href={item.itemWebUrl} target='_blank' rel='noopener noreferrer' className='truncate block'>
+                      {item.title}
+                    </a>
+                    <p>
+                      {item.price.value} {item.price.currency}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
         </div>
       )}
     </div>
