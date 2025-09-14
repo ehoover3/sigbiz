@@ -1,3 +1,4 @@
+// src/app/backend/ebay/route.ts
 import { NextResponse } from "next/server";
 
 const getEbayOAuthToken = async () => {
@@ -25,13 +26,15 @@ const getEbayOAuthToken = async () => {
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const barcode = searchParams.get("barcode");
+
   if (!barcode) {
     return NextResponse.json({ error: "Missing barcode" }, { status: 400 });
   }
 
   try {
     const accessToken = await getEbayOAuthToken();
-    const res = await fetch(`https://api.ebay.com/buy/browse/v1/item_summary/search?q=${barcode}&limit=1`, {
+    let url = `https://api.ebay.com/buy/browse/v1/item_summary/search?q=${barcode}&limit=10`;
+    const res = await fetch(url, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
         "Content-Type": "application/json",
@@ -44,14 +47,10 @@ export async function GET(request: Request) {
     }
 
     const data = await res.json();
-    return NextResponse.json({ totalResults: data.total });
+    return NextResponse.json({ totalActiveListings: data.total, data: data });
   } catch (err: unknown) {
     let errorMessage = "Unknown error";
-
-    if (err instanceof Error) {
-      errorMessage = err.message;
-    }
-
+    if (err instanceof Error) errorMessage = err.message;
     return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }
