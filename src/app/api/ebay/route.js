@@ -1,5 +1,5 @@
-// src/app/api/ebay-search/route.js
-import { getEbayToken, searchActiveListings } from "../../lib/ebay";
+// src/app/api/ebay/route.js
+import { getEbayOAuthToken, searchEbayItemActiveListings } from "../../lib/ebay";
 
 export async function GET(req) {
   try {
@@ -8,8 +8,8 @@ export async function GET(req) {
 
     if (!barcode) return new Response(JSON.stringify({ error: "Barcode is required" }), { status: 400 });
 
-    const token = await getEbayToken();
-    const activeData = await searchActiveListings(token, barcode);
+    const token = await getEbayOAuthToken();
+    const activeData = await searchEbayItemActiveListings(token, barcode);
 
     // Return active listings only
     return new Response(JSON.stringify({ activeListings: activeData.itemSummaries || [] }), {

@@ -1,9 +1,6 @@
 // src/lib/ebay.js
 
-// ------------------------
-// 1. Fetch OAuth Token
-// ------------------------
-export const getEbayToken = async () => {
+export const getEbayOAuthToken = async () => {
   const clientId = process.env.EBAY_CLIENT_ID;
   const clientSecret = process.env.EBAY_CLIENT_SECRET;
 
@@ -34,37 +31,63 @@ export const getEbayToken = async () => {
   return data.access_token;
 };
 
-// ------------------------
-// 2. Active Listings Search
-// ------------------------
-export const searchActiveListings = async (token, barcode, conditionFilter = "") => {
-  const allItems = [];
-  const limit = 100;
+export const searchEbayItemActiveListings = async (token, barcode, conditionFilter = "") => {
+  const limit = 100; // max allowed by eBay
   let offset = 0;
+  let allItems = [];
+
+  // ---------- STEP 1: GTIN search ----------
+  const gtinUrl = new URL("https://api.ebay.com/buy/browse/v1/item_summary/search");
+  gtinUrl.searchParams.append("gtin", barcode);
+  gtinUrl.searchParams.append("limit", "5"); // just need a few for keywords
+
+  const gtinRes = await fetch(gtinUrl.toString(), {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+      "X-EBAY-C-MARKETPLACE-ID": "EBAY_US",
+    },
+    cache: "no-store",
+  });
+
+  if (!gtinRes.ok) throw new Error(`GTIN search failed: ${gtinRes.statusText}`);
+  const gtinData = await gtinRes.json();
+  const gtinItems = gtinData.itemSummaries || [];
+
+  if (gtinItems.length === 0) return { itemSummaries: [] };
+
+  // ---------- STEP 2: Extract keywords ----------
+  // Take the title of the first GTIN item and remove special chars
+  const seedTitle = gtinItems[0].title.replace(/[^a-zA-Z0-9 ]/g, "");
+  const keywords = seedTitle.split(" ").slice(0, 8).join(" "); // take first 8 words for query
+
+  // ---------- STEP 3: Keyword search with pagination ----------
   let hasMore = true;
 
   while (hasMore) {
-    const url = new URL("https://api.ebay.com/buy/browse/v1/item_summary/search");
-    url.searchParams.append("gtin", barcode);
-    url.searchParams.append("limit", limit.toString());
-    url.searchParams.append("offset", offset.toString());
-    if (conditionFilter) url.searchParams.append("filter", conditionFilter);
+    const keywordUrl = new URL("https://api.ebay.com/buy/browse/v1/item_summary/search");
+    keywordUrl.searchParams.append("q", keywords);
+    keywordUrl.searchParams.append("limit", limit.toString());
+    keywordUrl.searchParams.append("offset", offset.toString());
+    if (conditionFilter) keywordUrl.searchParams.append("filter", conditionFilter);
 
-    const res = await fetch(url.toString(), {
+    const res = await fetch(keywordUrl.toString(), {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
+        "X-EBAY-C-MARKETPLACE-ID": "EBAY_US",
       },
       cache: "no-store",
     });
 
-    if (!res.ok) throw new Error(`Active search failed: ${res.statusText}`);
+    if (!res.ok) throw new Error(`Keyword search failed: ${res.statusText}`);
 
     const data = await res.json();
     const items = data.itemSummaries || [];
     allItems.push(...items);
 
-    if (items.length < limit) hasMore = false;
+    // Stop pagination if fewer than limit returned or reached total
+    if (items.length < limit || allItems.length >= data.total) hasMore = false;
     else offset += limit;
   }
 
