@@ -17,37 +17,29 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ onScan }) => {
   const [scannedCodes, setScannedCodes] = useState<ScannedCode[]>([]);
   const [lastScanTime, setLastScanTime] = useState<number>(0);
   const [latestResult, setLatestResult] = useState<string>("");
-
   const DEBOUNCE_DELAY = 1500;
 
   useEffect(() => {
     const codeReader = new BrowserMultiFormatReader();
     let controls: IScannerControls | null = null;
-
     if (videoRef.current) {
       codeReader
         .decodeFromVideoDevice(undefined, videoRef.current, (result, error) => {
           if (result) {
             const scannedText = result.getText();
             const now = Date.now();
-
             if (now - lastScanTime > DEBOUNCE_DELAY) {
               setLastScanTime(now);
-
               setScannedCodes((prev) => {
                 if (!prev.some((item) => item.code === scannedText)) {
                   return [...prev, { code: scannedText, timestamp: now }];
                 }
                 return prev;
               });
-
               setLatestResult(scannedText);
-
-              // Pass scanned code to parent
               if (onScan) onScan(scannedText);
             }
           }
-
           if (error && error.name !== "NotFoundException") {
             console.warn("Scan error:", error);
           }
@@ -57,14 +49,11 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ onScan }) => {
         })
         .catch((err) => console.error("Camera initialization error:", err));
     }
-
     return () => controls?.stop();
   }, [lastScanTime, onScan]);
-
   return (
     <div className='flex flex-col items-center w-full max-w-sm mx-auto'>
       <h1 className='text-xl sm:text-2xl font-bold mb-3'>Barcode Scanner</h1>
-
       <div className='relative w-full aspect-video border rounded-lg overflow-hidden'>
         <video ref={videoRef} className='absolute inset-0 w-full h-full object-cover transform scale-x-[-1]' autoPlay muted playsInline />
         <div className='absolute inset-0 flex items-center justify-center'>
