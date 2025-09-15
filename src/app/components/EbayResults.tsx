@@ -1,4 +1,6 @@
 // src/app/components/EbayResults.tsx
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from "react";
 
 interface EbayResultsProps {
@@ -33,7 +35,7 @@ const EbayResults: React.FC<EbayResultsProps> = ({ barcode }) => {
       setError(null);
 
       try {
-        let url = `/backend/ebay?barcode=${barcode}`;
+        const url = `/backend/ebay?barcode=${barcode}`;
         const res = await fetch(url);
         const json = await res.json();
 
