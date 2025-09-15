@@ -75,7 +75,7 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ onScan }) => {
 
   return (
     <div className='flex flex-col items-center w-full max-w-sm mx-auto'>
-      <h1 className='text-xl sm:text-2xl font-bold mb-3'>Barcode Scanner</h1>
+      <h1 className='text-xl sm:text-2xl font-bold mb-3'>Barcode Scanner v1.0.0</h1>
 
       {/* Video Scanner */}
       <div className='relative w-full aspect-video border rounded-lg overflow-hidden'>
