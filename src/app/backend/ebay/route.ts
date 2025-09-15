@@ -33,7 +33,7 @@ export async function GET(request: Request) {
 
   try {
     const accessToken = await getEbayOAuthToken();
-    let url = `https://api.ebay.com/buy/browse/v1/item_summary/search?q=${barcode}&limit=10`;
+    const url = `https://api.ebay.com/buy/browse/v1/item_summary/search?q=${barcode}&limit=10`;
     const res = await fetch(url, {
       headers: {
         Authorization: `Bearer ${accessToken}`,

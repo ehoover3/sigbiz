@@ -5,8 +5,23 @@ interface EbayResultsProps {
   barcode: string;
 }
 
+interface EbayApiResponse {
+  totalActiveListings?: number;
+  items?: EbayItem[];
+  error?: string;
+  [key: string]: unknown; // allow extra fields
+}
+
+interface EbayItem {
+  title: string;
+  price: number;
+  currency?: string;
+  url?: string;
+  [key: string]: unknown; // flexible for unexpected fields
+}
+
 const EbayResults: React.FC<EbayResultsProps> = ({ barcode }) => {
-  const [data, setData] = useState<any>(null); // store full JSON
+  const [data, setData] = useState<EbayApiResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
