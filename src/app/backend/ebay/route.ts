@@ -2,8 +2,8 @@
 import { NextResponse } from "next/server";
 
 const getEbayOAuthToken = async () => {
-  const clientId = process.env.EBAY_CLIENT_ID;
-  const clientSecret = process.env.EBAY_CLIENT_SECRET;
+  const clientId = process.env.NEXT_PUBLIC_EBAY_CLIENT_ID;
+  const clientSecret = process.env.NEXT_PUBLIC_EBAY_CLIENT_SECRET;
   if (!clientId || !clientSecret) throw new Error("Missing eBay API credentials.");
   const base64Credentials = Buffer.from(`${clientId}:${clientSecret}`).toString("base64");
   const res = await fetch("https://api.ebay.com/identity/v1/oauth2/token", {
